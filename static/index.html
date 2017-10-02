@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+    <title>test</title>
+    <script src="peer.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//www.WebRTC-Experiment.com/RecordRTC.js"></script>
+</head>
+<body>
+  First Name: <input type="text" id="myText" >
+<button onclick="myFunction()">Submit</button>
+Last Name: <input type="text" id="myText2" >
+  <button onclick="myFunction2()">Call</button>
+    <button id="start-call">start call</button>
+    <video controls autoplay></video>
+
+<script>
+var from1;
+var to1;
+function myFunction() {
+var x = document.getElementById("myText").value;
+from=x;
+}
+function myFunction() {
+var x = document.getElementById("myText2").value;
+to=x;
+}
+
+function getVideo(successCallback, errorCallback){
+    navigator.getUserMedia({
+        audio: true,
+        video: true
+    }, successCallback, errorCallback);
+}
+function onReceiveCall(call){
+
+    console.log('peer is calling...');
+    console.log(call);
+
+    getVideo(
+        function(MediaStream){
+            call.answer(MediaStream);
+            console.log('answering call started...');
+        },
+        function(err){
+            console.log('an error occured while getting the Video');
+            console.log(err);
+        }
+    );
+
+    call.on('stream', onReceiveStream);
+}
+function onReceiveStream(stream){
+    var video = document.querySelector('video');
+    video.src = window.URL.createObjectURL(stream);
+}
+var from = from1);
+var to = to1;
+var peer = new Peer(from, {
+        host: 'http://localhost', port: 3000, path: '/peerjs',
+        config: {'iceServers': [
+            { url: 'stun:stun1.l.google.com:19302' },
+            { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
+        ]}
+    }
+);
+peer.on('open', function(id){
+    console.log('My peer ID is: ' + id);
+});
+
+$('#start-call').click(function(){
+
+    console.log('starting call...');
+
+    getVideo(
+        function(MediaStream){
+
+            console.log('now calling ' + to);
+            var call = peer.call(to, MediaStream);
+            call.on('stream', onReceiveStream);
+        },
+        function(err){
+            console.log('an error occured while getting the Video');
+            console.log(err);
+        }
+    );
+
+});
+
+</script>
