@@ -14,81 +14,13 @@
     <video id="mevideo" autoplay></video>
     <video id='oppvideo' autoplay></video>
 <script>
-function randid(){
-  function s4(){
-    return Math.floor((1+Math.random())*0x10000).toString(16).substring(1);
-  }
-  id= s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+s4()+s4()+s4();
-  $('#uid').text(id);
-  return id;
-}
-var from1=randid();
-var to1;
-
-/*
-function getVideo(successCallback, errorCallback){
-    navigator.getUserMedia({
-        audio: true,
-        video: true
-    }, successCallback, errorCallback);
-}
-function onReceiveCall(call){
-
-    console.log('peer is calling...');
-    console.log(call);
-
-    getVideo(
-        function(MediaStream){
-            call.answer(MediaStream);
-            console.log('answering call started...');
-        },
-        function(err){
-            console.log('an error occured while getting the Video');
-            console.log(err);
-        }
-    );
-
-    call.on('stream', onReceiveStream);
-}
-function onReceiveStream(stream){
-    var video = document.querySelector('video');
-    video.src = window.URL.createObjectURL(stream);
-}*/
-var from = from1;
-var to = to1;
 var peer = new Peer({
-    key: 'peerjs',
-    path: '/peerjs', // <==========
+    path: '/peerjs',
     host: 'localhost',
     port: 9000
 });
 
-
-/*
-$('#start-call').click(function(){
-
-    console.log('starting call...');
-
-    getVideo(
-        function(MediaStream){
-
-            console.log('now calling ' + to);
-            var call = peer.call(to, MediaStream);
-            call.on('stream', onReceiveStream);
-        },
-        function(err){
-            console.log('an error occured while getting the Video');
-            console.log(err);
-        }
-    );
-
-});*/
-peer.on('error', function (err) {
-       console.log(err);
-       alert(err);
-   });
-
-   function handleCall(call) {
+   function Call(call) {
         call.on('stream', function (remoteStream) {
             console.log('set thier');
             //$('#call').hide();
@@ -106,13 +38,13 @@ peer.on('open', function(id){
 
 
 
-var constraints = window.constraints = {audio: true,  video: true};
+var constraints = {audio: true,  video: true};
 navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 window.localStream = stream;
                 $('#mevideo').prop('src', URL.createObjectURL(stream));
                 peer.on('call', function (call) {
                     call.answer(stream); // Answer the call with an A/V stream.
-                    handleCall(call);
+                    Call(call);
                 });});
 
                 function myFunction2() {
@@ -120,7 +52,7 @@ navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 to=x;
 
                 var call=peer.call(to,window.localStream);
-                handleCall(call);
+                Call(call);
                 }
 
 </script>
