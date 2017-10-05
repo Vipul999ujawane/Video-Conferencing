@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>test</title>
-    <script src="peer.min.js"></script>
+    <script src="peer.js"></script>
     <script src="jquery-3.2.1.min.js"></script>
     <script src="//www.WebRTC-Experiment.com/RecordRTC.js"></script>
 </head>
@@ -10,7 +10,7 @@
   <p>ID: </p><p id="uid"></p>
   Last Name: <input type="text" id="myText2" >
   <button onclick="myFunction2()">Call</button>
-    <button id="start-call">start call</button>
+
     <video id="mevideo" autoplay></video>
     <video id='oppvideo' autoplay></video>
 <script>
@@ -93,9 +93,18 @@ peer.on('error', function (err) {
             console.log('set thier');
             //$('#call').hide();
             //$('#oppvideo').show();
-            $('#their-video').prop('src', URL.createObjectURL(remoteStream));
+            $('#oppvideo').prop('src', URL.createObjectURL(remoteStream));
+            console.log('yolo');
         });
     }
+
+
+peer.on('open', function(id){
+  console.log('My peer ID is: ' + id);
+    $('#uid').text(id);
+          ;});
+
+
 
 var constraints = window.constraints = {audio: true,  video: true};
 navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -110,10 +119,6 @@ navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
                 var x = document.getElementById("myText2").value;
                 to=x;
 
-                peer.on('open', function(id){
-                    console.log('My peer ID is: ' + id);
-                    to=id;
-                });
                 var call=peer.call(to,window.localStream);
                 handleCall(call);
                 }
