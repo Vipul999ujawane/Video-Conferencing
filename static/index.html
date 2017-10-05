@@ -1,30 +1,31 @@
 <!DOCTYPE html>
+<html>
 <head>
     <title>test</title>
     <script src="peer.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="jquery-3.2.1.min.js"></script>
     <script src="//www.WebRTC-Experiment.com/RecordRTC.js"></script>
 </head>
 <body>
-  First Name: <input type="text" id="myText" >
-<button onclick="myFunction()">Submit</button>
-Last Name: <input type="text" id="myText2" >
+  <p>ID: </p><p id="uid"></p>
+  Last Name: <input type="text" id="myText2" >
   <button onclick="myFunction2()">Call</button>
     <button id="start-call">start call</button>
-    <video controls autoplay></video>
-
+    <video id="mevideo" autoplay></video>
+    <video id='oppvideo' autoplay></video>
 <script>
-var from1;
+function randid(){
+  function s4(){
+    return Math.floor((1+Math.random())*0x10000).toString(16).substring(1);
+  }
+  id= s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+s4()+s4()+s4();
+  $('#uid').text(id);
+  return id;
+}
+var from1=randid();
 var to1;
-function myFunction() {
-var x = document.getElementById("myText").value;
-from=x;
-}
-function myFunction() {
-var x = document.getElementById("myText2").value;
-to=x;
-}
 
+/*
 function getVideo(successCallback, errorCallback){
     navigator.getUserMedia({
         audio: true,
@@ -52,21 +53,18 @@ function onReceiveCall(call){
 function onReceiveStream(stream){
     var video = document.querySelector('video');
     video.src = window.URL.createObjectURL(stream);
-}
-var from = from1);
+}*/
+var from = from1;
 var to = to1;
-var peer = new Peer(from, {
-        host: 'http://localhost', port: 3000, path: '/peerjs',
-        config: {'iceServers': [
-            { url: 'stun:stun1.l.google.com:19302' },
-            { url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
-        ]}
-    }
-);
-peer.on('open', function(id){
-    console.log('My peer ID is: ' + id);
+var peer = new Peer({
+    key: 'peerjs',
+    path: '/peerjs', // <==========
+    host: 'localhost',
+    port: 9000
 });
 
+
+/*
 $('#start-call').click(function(){
 
     console.log('starting call...');
@@ -84,6 +82,43 @@ $('#start-call').click(function(){
         }
     );
 
-});
+});*/
+peer.on('error', function (err) {
+       console.log(err);
+       alert(err);
+   });
+
+   function handleCall(call) {
+        call.on('stream', function (remoteStream) {
+            console.log('set thier');
+            //$('#call').hide();
+            //$('#oppvideo').show();
+            $('#their-video').prop('src', URL.createObjectURL(remoteStream));
+        });
+    }
+
+var constraints = window.constraints = {audio: true,  video: true};
+navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                window.localStream = stream;
+                $('#mevideo').prop('src', URL.createObjectURL(stream));
+                peer.on('call', function (call) {
+                    call.answer(stream); // Answer the call with an A/V stream.
+                    handleCall(call);
+                });});
+
+                function myFunction2() {
+                var x = document.getElementById("myText2").value;
+                to=x;
+
+                peer.on('open', function(id){
+                    console.log('My peer ID is: ' + id);
+                    to=id;
+                });
+                var call=peer.call(to,window.localStream);
+                handleCall(call);
+                }
 
 </script>
+    <script src="jquery-3.2.1.min.js"></script>
+  </body>
+  </html>

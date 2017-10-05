@@ -1,12 +1,14 @@
 var express = require('express');
-var express_peer_server = require('peer').ExpressPeerServer;
-var peer_options = {
-    debug: true
-};
-
 var app = express();
+var ExpressPeerServer = require('peer').ExpressPeerServer;
 
-var server = app.listen(3000);
+//app.get('/', function(req, res, next) { res.sendFile('static/index.html'); });
 
-app.use('/peerjs', express_peer_server(server, peer_options));
+var server = app.listen(9000);
+
+var options = {
+    debug: true
+}
+
+app.use('/peerjs', ExpressPeerServer(server, options));
 app.use(express.static('static'));
