@@ -4,8 +4,8 @@ var ExpressPeerServer = require('peer').ExpressPeerServer;
 
 //app.get('/', function(req, res, next) { res.send('Hello world!'); });
 
-var server = app.listen(9000);
-
+var server = app.listen(80,'0.0.0.0');
+console.log('Server Started');
 var options = {
     debug: true
 }
